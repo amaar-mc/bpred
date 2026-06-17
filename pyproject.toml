@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bpred"
+version = "0.1.0"
+description = "Pure-Python simulator of classical CPU branch predictors: bimodal, gshare, and tournament"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Amaar Chughtai", email = "amaardevx@gmail.com"}]
+keywords = ["computer-architecture", "branch-prediction", "gshare", "bimodal", "cpu-simulator", "education"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.4", "mypy>=1.10"]
+
+[project.scripts]
+bpred = "bpred.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/amaar-mc/bpred"
+Repository = "https://github.com/amaar-mc/bpred"
+Issues = "https://github.com/amaar-mc/bpred/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bpred"]
+
+[tool.ruff]
+src = ["src"]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "ANN"]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+mypy_path = "src"

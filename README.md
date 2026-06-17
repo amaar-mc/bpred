@@ -1,5 +1,9 @@
 # bpred
 
+<p align="center">
+  <img src="assets/logo.png" alt="bpred logo" width="160">
+</p>
+
 Pure-Python simulator of classical CPU branch predictors for computer architecture education.
 
 Implements three predictors from first principles with zero runtime dependencies:

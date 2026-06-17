@@ -1,0 +1,28 @@
+# Sample branch trace for bpred
+# Format: <pc> <taken>
+# pc can be decimal or hex (0x prefix)
+# taken: 1/0, T/F, true/false
+
+# Loop branch -- taken most of the time
+0x1000 1
+0x1000 1
+0x1000 1
+0x1000 1
+0x1000 0
+0x1000 1
+0x1000 1
+0x1000 1
+0x1000 1
+0x1000 0
+
+# Function-call conditional -- usually taken
+0x2000 1
+0x2000 1
+0x2004 0
+0x2000 1
+0x2004 0
+0x2000 1
+0x2000 1
+0x2004 0
+0x2000 1
+0x2000 1

@@ -6,11 +6,12 @@
 
 Pure-Python simulator of classical CPU branch predictors for computer architecture education.
 
-Implements three predictors from first principles with zero runtime dependencies:
+Implements four predictors from first principles with zero runtime dependencies:
 
 - **Bimodal** (Smith 1981) -- a table of n-bit saturating counters indexed by PC.
 - **Gshare** (McFarling 1993) -- PC XOR global-history register indexes 2-bit counters.
 - **Tournament** (McFarling 1993 / Alpha 21264) -- a meta-selector combining local and global sub-predictors.
+- **Perceptron** (Jimenez and Lin 2001) -- a table of integer-weight perceptrons that can learn linearly-separable history patterns bimodal and gshare cannot capture.
 
 Part of the same open-source computer architecture education series as [tomasulo](https://github.com/amaar-mc/tomasulo) (out-of-order execution) and scoreboarding.
 
@@ -31,7 +32,7 @@ pip install -e ".[dev]"
 ## Python API
 
 ```python
-from bpred import BimodalPredictor, GsharePredictor, TournamentPredictor
+from bpred import BimodalPredictor, GsharePredictor, PerceptronPredictor, TournamentPredictor
 from bpred import run_trace, accuracy, mispredictions
 
 # Bimodal: 2-bit counters, 1024-entry table
@@ -46,12 +47,31 @@ local = BimodalPredictor(counter_bits=2, table_size=1024)
 global_ = GsharePredictor(history_bits=10, table_size=1024)
 pred = TournamentPredictor(local=local, global_=global_, meta_bits=2)
 
+# Perceptron: 12-bit history, 1024-entry table
+pred = PerceptronPredictor(history_length=12, table_size=1024)
+
 # Feed a trace
 trace = [(0x1000, True), (0x1004, False), (0x1008, True)]
 result = run_trace(pred, trace=trace)
 print(accuracy(trace_result=result))       # e.g. 0.6667
 print(mispredictions(trace_result=result)) # e.g. 1
 ```
+
+### Why use the perceptron predictor?
+
+Bimodal and gshare each use a single scalar counter per table entry, so they
+can only learn the *average* bias of a branch.  When the taken/not-taken
+outcome correlates with a specific combination of recent history bits (a
+linearly-separable pattern), those predictors plateau.
+
+The perceptron predictor maintains a weight vector per entry.  The dot product
+of those weights with the history vector expresses arbitrary linear functions
+over H history bits.  This lets it learn, for example, "taken when the last
+4 branches were all taken" or "taken on every other iteration" -- patterns
+that require tracking distinct history bits simultaneously.  The trade-off is
+that the predictor needs more warm-up branches to converge and the weights
+grow without bound (in simulation; hardware clamps them to a fixed-point
+range).
 
 ## CLI
 

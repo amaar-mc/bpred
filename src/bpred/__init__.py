@@ -1,6 +1,6 @@
 """bpred -- Pure-Python CPU branch predictor simulator.
 
-Provides three classical branch predictors and trace-driven simulation
+Provides four classical branch predictors and trace-driven simulation
 utilities for computer architecture education.
 
 Predictors
@@ -11,6 +11,8 @@ GsharePredictor
     McFarling (1993) global-history XOR predictor.
 TournamentPredictor
     McFarling (1993) / Alpha 21264-style meta-selecting predictor.
+PerceptronPredictor
+    Jimenez and Lin (2001) table of integer-weight perceptrons.
 
 Functions
 ---------
@@ -24,12 +26,14 @@ mispredictions(*, trace_result)
 
 from bpred.bimodal import BimodalPredictor
 from bpred.gshare import GsharePredictor
+from bpred.perceptron import PerceptronPredictor
 from bpred.tournament import TournamentPredictor
 from bpred.trace import TraceResult, accuracy, mispredictions, run_trace
 
 __all__ = [
     "BimodalPredictor",
     "GsharePredictor",
+    "PerceptronPredictor",
     "TournamentPredictor",
     "TraceResult",
     "accuracy",

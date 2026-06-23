@@ -21,14 +21,6 @@ Part of the same open-source computer architecture education series as [tomasulo
 pip install bpred
 ```
 
-PyPI publication is pending; install from source in the meantime:
-
-```bash
-git clone https://github.com/amaar-mc/bpred
-cd bpred
-pip install -e ".[dev]"
-```
-
 ## Python API
 
 ```python

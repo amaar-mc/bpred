@@ -14,12 +14,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   Constructor: `PerceptronPredictor(history_length=H, table_size=N)`.
   Exported from `bpred` top-level package.
 
-### Notes
-
-- PyPI publish is queued behind the new-project creation quota (currently
-  rate-limited). Build artifact passes `twine check`. Publish will follow once
-  the quota resets.
-
 ## [0.1.0] - 2026-06-17
 
 ### Added

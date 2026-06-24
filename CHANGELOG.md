@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-23
+
+### Added
+
+- `LocalHistoryPredictor`: Yeh and Patt (1991) PAg two-level adaptive predictor.
+  A per-branch local history table (BHT) indexed by PC feeds a shared pattern
+  history table (PHT) of 2-bit saturating counters indexed by the local history
+  pattern.  Learns periodic per-branch patterns (for example strict alternating
+  T,N,T,N) that a bimodal predictor thrashes on; a period-k pattern is captured
+  once `history_bits >= k`.
+  Constructor: `LocalHistoryPredictor(history_bits=N, bht_size=B, pht_size=P)`.
+  Exported from `bpred` top-level package and available as the `local` CLI
+  subcommand.
+
 ## [0.2.0] - 2026-06-17
 
 ### Added

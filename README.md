@@ -6,12 +6,13 @@
 
 Pure-Python simulator of classical CPU branch predictors for computer architecture education.
 
-Implements four predictors from first principles with zero runtime dependencies:
+Implements five predictors from first principles with zero runtime dependencies:
 
 - **Bimodal** (Smith 1981) -- a table of n-bit saturating counters indexed by PC.
 - **Gshare** (McFarling 1993) -- PC XOR global-history register indexes 2-bit counters.
 - **Tournament** (McFarling 1993 / Alpha 21264) -- a meta-selector combining local and global sub-predictors.
 - **Perceptron** (Jimenez and Lin 2001) -- a table of integer-weight perceptrons that can learn linearly-separable history patterns bimodal and gshare cannot capture.
+- **Local-history / PAg** (Yeh and Patt 1991) -- a per-branch local history table feeds a shared pattern history table, learning periodic per-branch patterns that a bimodal predictor thrashes on.
 
 Part of the same open-source computer architecture education series as [tomasulo](https://github.com/amaar-mc/tomasulo) (out-of-order execution) and scoreboarding.
 
@@ -25,6 +26,7 @@ pip install bpred
 
 ```python
 from bpred import BimodalPredictor, GsharePredictor, PerceptronPredictor, TournamentPredictor
+from bpred import LocalHistoryPredictor
 from bpred import run_trace, accuracy, mispredictions
 
 # Bimodal: 2-bit counters, 1024-entry table
@@ -41,6 +43,9 @@ pred = TournamentPredictor(local=local, global_=global_, meta_bits=2)
 
 # Perceptron: 12-bit history, 1024-entry table
 pred = PerceptronPredictor(history_length=12, table_size=1024)
+
+# Local-history (PAg): 8-bit per-branch history, 1024-entry BHT, 256-entry PHT
+pred = LocalHistoryPredictor(history_bits=8, bht_size=1024, pht_size=256)
 
 # Feed a trace
 trace = [(0x1000, True), (0x1004, False), (0x1008, True)]
@@ -65,11 +70,30 @@ that the predictor needs more warm-up branches to converge and the weights
 grow without bound (in simulation; hardware clamps them to a fixed-point
 range).
 
+### Why use the local-history (PAg) predictor?
+
+Bimodal predicts each branch from a single counter, so a branch whose outcome
+follows a short repeating pattern -- the textbook `T, N, T, N, ...` of a loop
+that runs an even number of times, for example -- makes the counter oscillate
+and the predictor thrashes near 50%.
+
+The local-history predictor (the PAg configuration of Yeh and Patt's two-level
+adaptive scheme, 1991) gives every branch its own N-bit shift register of
+recent outcomes in a branch history table (BHT).  That local pattern then
+indexes a shared pattern history table (PHT) of 2-bit counters, so each
+distinct recent-history pattern gets its own counter.  A period-k pattern is
+learned to near-100% accuracy once `history_bits >= k`, because each phase of
+the period maps to a different PHT entry.  The first level is per-address
+(`P`), the training is adaptive (`A`), and the second-level PHT is global
+(`g`), which is what the name PAg encodes.  The per-address-PHT variant (PAp)
+is a natural extension left as future work.
+
 ## CLI
 
 ```
 bpred bimodal --counter-bits 2 --table-size 1024 path/to/trace.trace
 bpred gshare --history-bits 10 --table-size 1024 path/to/trace.trace
+bpred local --history-bits 8 --bht-size 1024 --pht-size 256 path/to/trace.trace
 bpred tournament \
   --local-predictor bimodal --local-counter-bits 2 --local-table-size 1024 \
   --global-predictor gshare --global-history-bits 10 --global-table-size 1024 \

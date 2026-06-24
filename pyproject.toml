@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bpred"
-version = "0.2.0"
-description = "Pure-Python simulator of classical CPU branch predictors: bimodal, gshare, and tournament"
+version = "0.3.0"
+description = "Pure-Python simulator of classical CPU branch predictors: bimodal, gshare, tournament, perceptron, and local-history"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [{name = "Amaar Chughtai", email = "amaardevx@gmail.com"}]
-keywords = ["computer-architecture", "branch-prediction", "gshare", "bimodal", "cpu-simulator", "education"]
+keywords = ["computer-architecture", "branch-prediction", "gshare", "bimodal", "perceptron", "two-level-adaptive", "cpu-simulator", "education"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Education",

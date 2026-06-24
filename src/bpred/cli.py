@@ -9,6 +9,7 @@ from pathlib import Path
 from bpred import (
     BimodalPredictor,
     GsharePredictor,
+    LocalHistoryPredictor,
     TournamentPredictor,
     accuracy,
     mispredictions,
@@ -84,6 +85,17 @@ def _build_parser() -> argparse.ArgumentParser:
     gshare.add_argument("tracefile", type=Path)
 
     # ------------------------------------------------------------------
+    # local (PAg)
+    # ------------------------------------------------------------------
+    local_p = sub.add_parser(
+        "local", help="Local-history PAg (Yeh and Patt 1991) predictor"
+    )
+    local_p.add_argument("--history-bits", type=int, required=True)
+    local_p.add_argument("--bht-size", type=int, required=True)
+    local_p.add_argument("--pht-size", type=int, required=True)
+    local_p.add_argument("tracefile", type=Path)
+
+    # ------------------------------------------------------------------
     # tournament
     # ------------------------------------------------------------------
     tourn = sub.add_parser(
@@ -120,6 +132,12 @@ def _build_predictor(args: argparse.Namespace) -> BranchPredictor:
         return GsharePredictor(
             history_bits=args.history_bits,
             table_size=args.table_size,
+        )
+    if args.predictor == "local":
+        return LocalHistoryPredictor(
+            history_bits=args.history_bits,
+            bht_size=args.bht_size,
+            pht_size=args.pht_size,
         )
     if args.predictor == "tournament":
         local: BranchPredictor = BimodalPredictor(
